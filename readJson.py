@@ -44,10 +44,11 @@ def advancedsentiment(message):
     negvalue = sent.sentiment.p_neg
     return classification, posvalue, negvalue
 
-token = getData('feedconstitutionalpatriot.json')
+# token = getData('feedconstitutionalpatriot.json')
+token = getData('feedfoodgroups.json')
 
 # write to csv file
-outfile = file('constitutionalpatriot.csv','wb')
+outfile = file('feedfoodgroups.csv','wb')
 writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
 
 for message_no, message in enumerate(token):
@@ -64,8 +65,8 @@ for message_no, message in enumerate(token):
     # print "%s \t %s  \t %s  \t %s  \t %s \t %s" %(message_no, subjectivity, polarity, classification, posvalue, negvalue)
 
     # writer.writerow([message_no,subjectivity, polarity, classification, posvalue, negvalue])
-
     writer.writerow([
+        message_no,
         subj_polar(message)[0],
         subj_polar(message)[1],
         advancedsentiment(message)[0],
