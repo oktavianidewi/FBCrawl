@@ -44,11 +44,14 @@ def advancedsentiment(message):
     negvalue = sent.sentiment.p_neg
     return classification, posvalue, negvalue
 
-# token = getData('feedconstitutionalpatriot.json')
-token = getData('feedfoodgroups.json')
+token = getData('feedconstitutionalpatriot.json')
+# token = getData('feedfoodgroups.json')
+# token = getData('feedtraveladdiction.json')
 
 # write to csv file
-outfile = file('feedfoodgroups.csv','wb')
+outfile = file('constitutionalpatriots.csv','wb')
+# outfile = file('feedfoodgroups.csv','wb')
+# outfile = file('feedtraveladdiction.csv','wb')
 writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
 
 for message_no, message in enumerate(token):
