@@ -22,10 +22,11 @@ curl -i -X GET
 # python 2.7
 from urllib import urlopen
 import json
+import datetime
+from dynamicVar import oauth, limit, groupname, directory
+import os
 
-oauth = "CAACEdEose0cBADcNP15dZCo4PZBPQj0nRAIvNtIZBRxUBq6XrLW4APTaRBOfvbKliEBwIjHGkhkhYDM94X35CwZCojtXJGvAl938KF4cG2SioZC2VpOUNtba2ytwWFibhnlcWzp3kQRYHo1y1GXfFBkHszwHKP1u4o33EZBjgfZBIul3a47jQLdDVw8RbKscWh5Q1irFELEprexjQoDkGsN"
-limit = "500"
-
+date = datetime.date.today().strftime('%m%d%Y')
 def groupInfo(groupname, type):
     if groupname == 'constitutionalpatriot':
         fbgroupid = "394462630661212"
@@ -40,7 +41,7 @@ def groupInfo(groupname, type):
         fbgroupid = "2232297350"
 
     fileformat = '.json'
-    jsonfile = type+groupname+fileformat
+    jsonfile = date+'_'+type+groupname+fileformat
 
     return fbgroupid, jsonfile
 
@@ -62,41 +63,42 @@ def getGroupFeed(groupname, limit, oauth):
 
     feedurl = "https://graph.facebook.com/v2.5/%s?fields=feed.limit(%s)&access_token=%s" %(fbgroupid, limit, oauth)
     print feedurl
-    quit()
+    writeprocess = writeToJsonFile(feedurl, jsonfile)
+    return writeprocess
+
+def getPostsInfo(groupname,limit,oauth):
+    type = 'pi'
+    groupinforesult = groupInfo(groupname, type)
+    fbgroupid = groupinforesult[0]
+    jsonfile = groupinforesult[1]
+    # limit parameter override since parameter
+    feedurl = "https://graph.facebook.com/v2.6/%s?fields=feed.limit(%s){updated_time,from,reactions,comments}&access_token=%s" %(fbgroupid,limit,oauth)
+    print feedurl
     writeprocess = writeToJsonFile(feedurl, jsonfile)
     return writeprocess
 
 def getGroupInfo():
     pass
 
+def directoryexist(dir):
+    # create folder
+    directory = dir
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    directoryIsExist = True
+    return directoryIsExist
+
 def writeToJsonFile(url, jsonfile):
+    checking = directoryexist(directory)
     result = urlopen(url)
     read = result.read()
-    file = open(jsonfile, "wb")
+    file = open(directory+'/'+jsonfile, "wb")
     file.write(read)
     file.close()
     return True
 
-# to get group member
-# getGroupMember('constitutionalpatriot', limit, oauth)
-# getGroupMember('foodgroups', limit, oauth)
-# getGroupMember('traveladdiction', limit, oauth)
-# getGroupMember('monkeymajik', limit, oauth)
-# getGroupMember('TEDtranslate', limit, oauth)
-
 # to get group feed
-# getGroupFeed('constitutionalpatriot', limit, oauth)
-# getGroupFeed('foodgroups', limit, oauth)
-# getGroupFeed('traveladdiction', limit, oauth)
-getGroupFeed('monkeymajik', limit, oauth)
-# getGroupFeed('TEDtranslate', limit, oauth)
+# getGroupFeed(groupname, limit, oauth)
 
-# file = open("foodgroups.json", "wb")
-# file = open("recipeshare.json", "wb")
-# file = open("constitutionalpatriots.json", "wb")
-# file = open("feedfoodgroups.json", "wb")
-"""
-file = open("feedconstitutionalpatriot.json", "wb")
-file.write(read)
-file.close()
-"""
+# to get userid who post
+getPostsInfo(groupname, limit, oauth)
