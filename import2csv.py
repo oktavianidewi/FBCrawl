@@ -1,6 +1,6 @@
 import csv
 import json
-from dynamicVar import groupname, directory, presentFile, previousFile
+from dynamicVar import groupname, directory, presentFile, previousFile, stoppeduserid
 import datetime
 
 date = datetime.date.today().strftime('%m%d%Y')
@@ -48,6 +48,11 @@ def compareWithPreviousUser():
     # print len(usernew)
     return usernew
 
+def findIndex(userid):
+    # 4744301940858
+    newarr = compareWithPreviousUser()
+    return newarr.index(userid)
+
 def convertPostInfo(base):
     filename = date+'_pi'+base+'.json'
     filtereduser = []
@@ -80,3 +85,4 @@ def convertPostInfo(base):
 
 # convertPostInfo(groupname)
 print compareWithPreviousUser()
+print findIndex(stoppeduserid)
