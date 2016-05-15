@@ -29,9 +29,11 @@ query to get posts based on user is restricted. But, it is possible to get all p
 # python 2.7
 from urllib import urlopen
 import json
+import datetime
+from dynamicVar import oauth, limit, groupname, directory
+import os
 
-oauth = "CAACEdEose0cBAFSUJmJFPJeKVBVtgsmuGUBfATuf5hXGpVDIpn0Wb9anr6ZBqqQyJFQPcopkMz3IfRJmzoziftlcpwRofWlIyV8m9pmLCIcTAgXygqt8TmzaOkWZCIhZBZCPwNLkDzMO5kdL7oWeUgDfhkXGOsR8qa2IjkyO2SNYNhDTURWQGWJ0Y1ti9n1Ft2IzrOd43ucc3Y5PG1zx"
-limit = "500"
+date = datetime.date.today().strftime('%m%d%Y')
 
 def groupInfo(groupname, type):
     if groupname == 'constitutionalpatriot':
@@ -47,7 +49,7 @@ def groupInfo(groupname, type):
         fbgroupid = "2232297350"
 
     fileformat = '.json'
-    jsonfile = type+groupname+fileformat
+    jsonfile = date+'_'+type+groupname+fileformat
 
     return fbgroupid, jsonfile
 
@@ -67,6 +69,7 @@ def getGroupFeed(groupname, limit, oauth):
     fbgroupid = groupinforesult[0]
     jsonfile = groupinforesult[1]
     feedurl = "https://graph.facebook.com/v2.5/%s?fields=feed.limit(%s)&access_token=%s" %(fbgroupid, limit, oauth)
+
     writeprocess = writeToJsonFile(feedurl, jsonfile)
     return writeprocess
 
@@ -75,51 +78,34 @@ def getPostsInfo(groupname,limit,oauth):
     groupinforesult = groupInfo(groupname, type)
     fbgroupid = groupinforesult[0]
     jsonfile = groupinforesult[1]
-    year = 2016
     # limit parameter override since parameter
-    feedurl = "https://graph.facebook.com/v2.6/%s?fields=feed.limit(%s).since(%s){updated_time,from,reactions,comments}&access_token=%s" %(fbgroupid,limit,year,oauth)
+    feedurl = "https://graph.facebook.com/v2.6/%s?fields=feed.limit(%s){updated_time,from,reactions,comments}&access_token=%s" %(fbgroupid,limit,oauth)
+    print feedurl
     writeprocess = writeToJsonFile(feedurl, jsonfile)
     return writeprocess
 
 def getGroupInfo():
     pass
 
+def directoryexist(dir):
+    # create folder
+    directory = dir
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    directoryIsExist = True
+    return directoryIsExist
+
 def writeToJsonFile(url, jsonfile):
+    checking = directoryexist(directory)
     result = urlopen(url)
     read = result.read()
-    file = open(jsonfile, "wb")
+    file = open(directory+'/'+jsonfile, "wb")
     file.write(read)
     file.close()
     return True
 
-# to get group member
-# getGroupMember('constitutionalpatriot', limit, oauth)
-# getGroupMember('foodgroups', limit, oauth)
-# getGroupMember('traveladdiction', limit, oauth)
-# getGroupMember('monkeymajik', limit, oauth)
-# getGroupMember('TEDtranslate', limit, oauth)
-
 # to get group feed
-# getGroupFeed('constitutionalpatriot', limit, oauth)
-# getGroupFeed('foodgroups', limit, oauth)
-# getGroupFeed('traveladdiction', limit, oauth)
-# getGroupFeed('monkeymajik', limit, oauth)
-# getGroupFeed('TEDtranslate', limit, oauth)
+# getGroupFeed(groupname, limit, oauth)
 
-# to get posts info
-# getPostsInfo('TEDtranslate', limit, oauth)
-# getPostsInfo('constitutionalpatriot', limit, oauth)
-# getPostsInfo('foodgroups', limit, oauth)
-# getPostsInfo('traveladdiction', limit, oauth)
-# getPostsInfo('monkeymajik', limit, oauth)
-
-# file = open("foodgroups.json", "wb")
-# file = open("recipeshare.json", "wb")
-# file = open("constitutionalpatriots.json", "wb")
-# file = open("feedfoodgroups.json", "wb")
-
-"""
-file = open("feedconstitutionalpatriot.json", "wb")
-file.write(read)
-file.close()
-"""
+# to get userid who post
+getPostsInfo(groupname, limit, oauth)
