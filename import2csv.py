@@ -1,6 +1,6 @@
 import csv
 import json
-from dynamicVar import groupname, directory, dategroupnamefile
+from dynamicVar import groupname, directory, presentFile, previousFile
 import datetime
 
 date = datetime.date.today().strftime('%m%d%Y')
@@ -26,21 +26,27 @@ def convertMember(base):
 def compareWithPreviousUser():
     previousUser = []
     presentUser = []
-    with open(directory+'/'+dategroupnamefile) as data_file:
-        json_data = json.load(data_file)
-        for postiteminfo in json_data['feed']['data']:
-            # row yang ditulis: username, userid, postid, updated_time, #reaction (kalo ada), #comments
-            presentUser.append(postiteminfo['from']['id'])
+    with open(directory+'/'+presentFile, 'rb') as data_file:
+        csv_data = csv.reader(data_file, delimiter=',')
+        for row in csv_data:
+            x = ', '.join(row)
+            presentUser.append(x)
+        presentUser.pop(0)
+    # print len(presentUser)
 
-    previousFile = 'piB'+groupname+'.csv'
-    print previousFile
+    # print previousFile
     with open(directory+'/'+previousFile) as data_file:
-        json_data = json.load(data_file)
-        for postiteminfo in json_data['feed']['data']:
-            previousUser.append(postiteminfo['from']['id'])
+        csv_data = csv.reader(data_file, delimiter=',')
+        for row in csv_data:
+            x = ', '.join(row)
+            previousUser.append(x)
+        previousUser.pop(0)
 
-    print presentUser
-    print previousUser
+    # print len(previousUser)
+
+    usernew = list(set(presentUser) - set(previousUser))
+    # print len(usernew)
+    return usernew
 
 def convertPostInfo(base):
     filename = date+'_pi'+base+'.json'
@@ -50,7 +56,7 @@ def convertPostInfo(base):
     writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
     # writer.writerow(["Username", "UserID", "PostID", "updatedtime", "#reactions", "#comments"])
     writer.writerow(["UserID"])
-    with open(directory+'/'+dategroupnamefile) as data_file:
+    with open(directory+'/'+presentFile) as data_file:
         json_data = json.load(data_file)
 
         for postiteminfo in json_data['feed']['data']:
@@ -73,4 +79,4 @@ def convertPostInfo(base):
     outfile.close()
 
 # convertPostInfo(groupname)
-compareWithPreviousUser()
+print compareWithPreviousUser()
