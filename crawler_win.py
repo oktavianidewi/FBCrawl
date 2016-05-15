@@ -1,7 +1,7 @@
 import os
 import sys
-from import2csv import compareWithPreviousUser
-from dynamicVar import groupname
+from import2csv import compareWithPreviousUser, findIndex
+from dynamicVar import groupname, stoppeduserid
 import os.path
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -186,7 +186,10 @@ if __name__ == '__main__':
     print urls
     baseurl = 'www.facebook.com/'
 
-    startrow = 0
+    if findIndex(stoppeduserid) :
+        startrow = findIndex(stoppeduserid)
+    else:
+        startrow = 0
     endrow = readfile.__len__()
 
     for idx in range(startrow, endrow):
