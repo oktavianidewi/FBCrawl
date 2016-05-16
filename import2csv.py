@@ -50,7 +50,8 @@ def compareWithPreviousUser():
 
 def findIndex(userid):
     # 4744301940858
-    if userid == 0:
+    print userid
+    if userid == '0':
         stoppeduseridindex = 0
     else :
         newarr = compareWithPreviousUser()
