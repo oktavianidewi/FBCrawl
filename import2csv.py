@@ -50,8 +50,11 @@ def compareWithPreviousUser():
 
 def findIndex(userid):
     # 4744301940858
-    newarr = compareWithPreviousUser()
-    return newarr.index(userid)
+    if userid == 0:
+        newarr = 0
+    else :
+        newarr = compareWithPreviousUser()
+    return
 
 def convertPostInfo(base):
     filename = date+'_pi'+base+'.json'
