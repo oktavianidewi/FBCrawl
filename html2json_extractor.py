@@ -276,9 +276,12 @@ def xtract_timeline():
                         # "UFIPagerLink" may find the "View more replies" in the comments
                         if "repl" not in the_post_comment_comments_more.text:
                             the_post_comment_comments_count = the_post_comment_comments_more.text[5:the_post_comment_comments_more.text.find("more")-1]
-                            # print the_post_comment_comments_count.split(' ')[0]
-                            # ada data yang valuenya '1 comme'
-                            the_post_comment_comments_count = int(the_post_comment_comments_count.split(' ')[0]) + 4
+                            if the_post_comment_comments_count:
+                                # print the_post_comment_comments_count.split(' ')[0]
+                                # ada data yang valuenya '1 comme'
+                                the_post_comment_comments_count = int(the_post_comment_comments_count.split(' ')[0]) + 4
+                            else:
+                                 the_post_comment_comments_count = 0
                     else:
                         the_post_comment_comments_count = the_post_comment_comments_more.text[9:the_post_comment_comments_more.text.find("comment")-1]
                 else:
