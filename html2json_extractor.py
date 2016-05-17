@@ -433,8 +433,9 @@ if __name__ == '__main__':
 
     # for root, dirs, files in os.walk("D:\githubrepository\webscrapper\webinspect/try_inspect/4340266040557"):
     # directory = "foodgroups"
-    directoryGroup = "piBconstitutionalpatriot"
+    # directoryGroup = "piBconstitutionalpatriot"
     # directory = "try_inspect"
+    print directoryGroup
     user_num = 0
     infoperuser = {}
     alluserinfo = []
