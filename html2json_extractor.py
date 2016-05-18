@@ -7,7 +7,8 @@ from textblob import TextBlob
 import re
 import time
 from urllib import urlopen
-from dynamicVar import directoryGroup, savedInfoFile
+from dynamicVar import html2json_extractor_var
+# directoryGroup, savedInfoFile
 
 def xtract_timeline():
     res = {}
@@ -353,19 +354,20 @@ def xtract_timeline():
 def xtract_like():
     likes = {}
     res = {}
+    itemslikedarr = []
+    subcategoryitemsarr = []
     try:
         ullikes = soup.find_all(attrs={'class':'uiList _4-sn _5k35 _620 _509- _4ki'})
-        # print likes
         for indexsub in range(0, len(ullikes)):
             itemsliked = ullikes[indexsub].find_all(attrs={'class':'fsl fwb fcb'})
             subcategoryitemsliked = ullikes[indexsub].find_all(attrs={'class':'fsm fwn fcg'})
             for index in range(0, len(itemsliked) ) :
-                likes[subcategoryitemsliked[index].text] = itemsliked[index].text
+                subcategoryitemsarr.append(subcategoryitemsliked[index].text)
+                # print subcategoryitemsliked[index].text
+                # likes[subcategoryitemsliked[index].text] = itemslikedarr.append(itemsliked[index].text)
     except Exception, e:
-        likes['error'] = str(e).replace("'", "")
-
-    # res['likes'] = likes
-    return likes
+        subcategoryitemsarr.append(str(e).replace("'", ""))
+    return subcategoryitemsarr
 
 def xtract_about():
     # extract username
@@ -434,10 +436,7 @@ if __name__ == '__main__':
     def with_class(tag):
         return tag.has_attr('class')
 
-    # for root, dirs, files in os.walk("D:\githubrepository\webscrapper\webinspect/try_inspect/4340266040557"):
-    # directory = "foodgroups"
-    # directoryGroup = "piBconstitutionalpatriot"
-    # directory = "try_inspect"
+    directoryGroup = html2json_extractor_var()['directoryGroup']
     print directoryGroup
     user_num = 0
     infoperuser = {}
@@ -489,4 +488,4 @@ if __name__ == '__main__':
             userid = str(name.split('_')[1].split('.')[0])
             infoperuser[userid] = file
     print infoperuser
-    writeToJsonFile(infoperuser, savedInfoFile)
+    writeToJsonFile(infoperuser, html2json_extractor_var()['savedInfoFile'])
