@@ -15,7 +15,6 @@ for filename in filenamearr:
         dict = json.load(file)
 
     data.update(dict)
-    # print data
 # print 'alldict', data
 # print like_extractor_var()['targetfile']
 
@@ -37,11 +36,7 @@ def writeToFile(result):
     return True
 
 def getLikeCategorySummary():
-    resultToWrite = []
     x = []
-    hits = 0
-    numOfEnglishPostUser = 0
-
     for userid in data:
         if 'like' in data[userid]:
             # if len(data[userid]['like']) > 0:
@@ -51,7 +46,6 @@ def getLikeCategorySummary():
 
             tempList = []
             arrayUniqueCat = {}
-            count = 0
 
             for i, e in enumerate(x):
                 if e not in tempList :
@@ -80,18 +74,17 @@ likeperuser = {}
 matchvalue = []
 alluserlike = []
 column = getUniqueLikeCategories()
+print column
 
 head = ['userid']
 for cat in column:
     head.append(cat)
 likeperuser['headrow'] = head
 
-print column
-
 userWithLike = {}
 for userid in data:
     likevalue = data[userid]['like']
-    if likevalue :
+    if likevalue:
         matchvalue = []
         for cat in column:
             if cat in likevalue:
@@ -100,5 +93,5 @@ for userid in data:
                 value = 0
             matchvalue.append(value)
         likeperuser[userid] = matchvalue
-print likeperuser
+# print likeperuser
 writeToFile(likeperuser)
