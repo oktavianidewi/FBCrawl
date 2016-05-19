@@ -48,21 +48,25 @@ def getTimeline(*userID):
 english_non_details = {}
 def detectLanguageFromUserPosts(userID):
     # checking english post atau bukan?
-    userposts = data[userID]['timeline']
-    numOfEnglishPost = 0
-    for userpost in userposts:
-        # index 12 is for posts
-        stopwordsdetection = is_english(userpost[12])
-        # print userpost[12]
-        # print stopwordsdetection
-        if stopwordsdetection:
-            numOfEnglishPost += 1
-    # print numOfEnglishPost, len(userposts)
-    numOfUserPost = len(userposts)
-    if numOfEnglishPost > 20:
-        status = 'English'
+    if 'timeline' in data[userID] :
+        userposts = data[userID]['timeline']
+        numOfEnglishPost = 0
+        for userpost in userposts:
+            # index 12 is for posts
+            stopwordsdetection = is_english(userpost[12])
+            # print stopwordsdetection, userpost[12]
+            if stopwordsdetection:
+                numOfEnglishPost += 1
+        # print numOfEnglishPost, len(userposts)
+        numOfUserPost = len(userposts)
+        if numOfEnglishPost > 20:
+            status = 'English'
+        else:
+            status = 'Non-English'
     else:
-        status = 'Non-English'
+        status = 'No Posts'
+        numOfEnglishPost = 0
+        numOfUserPost = 0
     return {"userid":userID,"status":status,"englishpost":numOfEnglishPost,"totalpost":numOfUserPost}
     # return status
 
@@ -72,13 +76,15 @@ def checkValidUser():
 def writeToFile(data):
     targetfile = tl_extractor_var()['targetfile']
     # harus ada pengecekan fileexist atau ga
+    """
     isExist = os.path.isfile(targetfile)
     if isExist == True :
         # kalo file exist
         file = open(targetfile, "a")
     else :
         # kalo file not exist
-        file = open(targetfile, "w+")
+    """
+    file = open(targetfile, "w+")
     file.write(json.dumps(data))
     file.close()
     return True
@@ -101,5 +107,4 @@ for userid in data:
             numOfEnglishPostUser += 1
     resultToWrite.append(result)
 writeToFile(resultToWrite)
-# print resultToWrite
-print "numOfEnglishPostUser : ", numOfEnglishPostUser
+print 'jumlah english post user : ', numOfEnglishPostUser
