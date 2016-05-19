@@ -24,12 +24,14 @@ def writeToFile(result):
     print filename
     # harus ada pengecekan fileexist atau ga
     isExist = os.path.isfile(filename)
+    """
     if isExist == True :
         # kalo file exist
         file = open(filename, "a")
     else :
         # kalo file not exist
-        file = open(filename, "w+")
+    """
+    file = open(filename, "w+")
     file.write(json.dumps(result))
     file.close()
     return True
@@ -79,32 +81,6 @@ matchvalue = []
 alluserlike = []
 column = getUniqueLikeCategories()
 
-# coba di 1 user
-userid = '10156164355355058'
-likevalue = data[userid]['like']
-"""
-print likevalue
-x = Counter(likevalue)
-
-# [[x,l.count(x)] for x in set(l)]
-y = [[z,likevalue.count(z)] for z in set(likevalue)]
-print y
-print column
-
-value = 0
-for cat in column:
-    # print cat, likevalue
-    if cat in likevalue:
-        # print True
-        value = likevalue.count(cat)
-    else:
-        # print False
-        value = 0
-    matchvalue.append(value)
-likeperuser[userid] = matchvalue
-print likeperuser
-"""
-# tambahi nama column
 head = ['userid']
 for cat in column:
     head.append(cat)
