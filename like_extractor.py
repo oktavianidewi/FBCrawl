@@ -85,17 +85,20 @@ head = ['userid']
 for cat in column:
     head.append(cat)
 likeperuser['headrow'] = head
-# value
+
+print column
+
+userWithLike = {}
 for userid in data:
-    if 'like' in data[userid]:
-        likevalue = data[userid]['like']
+    likevalue = data[userid]['like']
+    if likevalue :
+        matchvalue = []
         for cat in column:
             if cat in likevalue:
                 value = likevalue.count(cat)
             else:
                 value = 0
             matchvalue.append(value)
-    # print matchvalue
-    likeperuser[userid] = matchvalue
-# print likeperuser
+        likeperuser[userid] = matchvalue
+print likeperuser
 writeToFile(likeperuser)
