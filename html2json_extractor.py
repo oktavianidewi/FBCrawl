@@ -485,7 +485,9 @@ if __name__ == '__main__':
                     timelineres = xtract_timeline()
                     print timelineres
                     file['timeline'] = timelineres
-            userid = str(name.split('_')[1].split('.')[0])
+            # userid1 = str(name.split('_')[1].split('.')[0])
+            userid = str(name).rstrip('.html').lstrip('likes_, about_, timeline_')
+            # print userid
             infoperuser[userid] = file
     print infoperuser
     writeToJsonFile(infoperuser, html2json_extractor_var()['savedInfoFile'])
