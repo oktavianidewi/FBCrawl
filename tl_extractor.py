@@ -72,6 +72,7 @@ def detectLanguageFromUserPosts(userID):
 
 def writeToFile(data):
     targetfile = tl_extractor_var()['targetfile']
+    print targetfile
     # harus ada pengecekan fileexist atau ga
     """
     isExist = os.path.isfile(targetfile)
@@ -116,5 +117,55 @@ filename = tl_extractor_var()['sourcefile']
 with open(filename) as file:
     data = json.load(file)
 
-print countValid()
-print countUserdID()
+def checkCrawledUser():
+    crawledUser = []
+    foldername = 'dataset/20160515_foodgroups backup'
+    if os.sep == '/':
+        limit = 2
+    else:
+        limit = 1
+    # for root, dirs, files in os.walk(directoryGroup):
+    for root in os.walk(foldername):
+        arr = root[0].split(os.sep)
+        if len(arr) > limit:
+            crawledUser.append(unicode(arr[limit]))
+    return crawledUser
+
+def countExtracted():
+    hitValid = 0
+    validUser = []
+    with open(tl_extractor_var()['sourcefile'], 'r') as data_file:
+        data = json.load(data_file)
+    for userid in data:
+        if 'timeline' in data[userid]:
+            hitValid += 1
+            validUser.append(userid)
+    return validUser
+
+def untracked():
+    # untuk mengetahui selisih antara list of extracted user dengan crawled user di folder
+    x = countValid()
+    y = checkCrawledUser()
+
+    print sorted(set(x))
+    print len(x)
+    print sorted(set(y))
+    print len(y)
+
+    selisih = list(set(y) - set(x))
+    print len(selisih)
+    return selisih
+
+writeToFile(untracked())
+print untracked()
+
+"""
+x = countValid()
+a = countExtracted()
+print sorted(x)
+print sorted(countExtracted())
+selisihNotExtracted = list(set(x) - set(a))
+print len(selisihNotExtracted)
+for i in selisihNotExtracted:
+    print i
+"""

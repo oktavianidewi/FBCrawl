@@ -39,6 +39,8 @@ def savepage(type, userid):
         else:
             directory = userid
         userid = string.replace(userid, '?', '#')
+    elif crawler_win_var()['info'] == 'untrackeduser':
+        directory = userid.rstrip('\n')
     else:
         # directory is based on userid
         directory = userid.rstrip('\n')
@@ -191,6 +193,7 @@ if __name__ == '__main__':
     urls = []
     reload(sys)
     sys.setdefaultencoding('utf-8')
+    baseurl = 'www.facebook.com/'
     print crawler_win_var()
     if crawler_win_var()['info'] == 'additionaluser':
         with open('dataset/271_user.json', 'r') as data_file:
@@ -201,12 +204,19 @@ if __name__ == '__main__':
         for url in range(startrow, endrow):
             getuserurl = xx[url]
             urls.append(getuserurl)
+    elif crawler_win_var()['info'] == 'untrackeduser':
+        with open('dataset/20160515_foodgroups_un.json', 'r') as data_file:
+            xx = json.load(data_file)
+        startrow = 0
+        endrow = xx.__len__()
+        for idx in range(startrow, endrow):
+            getuserid = xx[idx]
+            urls.append(getuserid)
     else:
         # get userid from .csv file
         urls = []
         readfile = compareWithPreviousUser()
         print urls
-        baseurl = 'www.facebook.com/'
 
         if findIndex(stoppeduserid) :
             startrow = findIndex(stoppeduserid)
@@ -217,6 +227,8 @@ if __name__ == '__main__':
         for idx in range(startrow, endrow):
             getuserid = readfile[idx]
             urls.append(getuserid)
+
+    print urls
 
     # driver init
     driver = webdriver.Firefox()
@@ -250,6 +262,9 @@ if __name__ == '__main__':
             url = useridraw
             idx += 1
             userid = useridraw.split('/')[3]
+        elif crawler_win_var()['info'] == 'untrackeduser':
+            userid = useridraw.rstrip('\n')
+            url = baseurl+userid
         else:
             userid = useridraw.rstrip('\n')
             url = baseurl+userid
