@@ -88,10 +88,12 @@ def writeToFile(data):
 
 def countValid():
     hitValid = 0
+    validUser = []
     for userid in data:
         if 'timeline' in data[userid]:
             hitValid += 1
-    return hitValid
+            validUser.append(userid)
+    return validUser
 
 def userEnglishPost():
     resultToWrite = []
