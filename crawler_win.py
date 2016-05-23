@@ -1,13 +1,15 @@
 import os
 import sys
 from import2csv import compareWithPreviousUser, findIndex
-from dynamicVar import groupname, stoppeduserid
+from dynamicVar import groupname, stoppeduserid, crawler_win_var
 import os.path
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import datetime
 import time
+import json
+import string
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,8 +32,16 @@ def directoryexist(directory):
     return directoryIsExist
 
 def savepage(type, userid):
-    # directory is based on userid
-    directory = userid.rstrip('\n')
+    if crawler_win_var()['info'] == 'additionaluser':
+        # directory is based on userid
+        if '?' in userid:
+            directory = string.replace(userid, '?', '#')
+        else:
+            directory = userid
+        userid = string.replace(userid, '?', '#')
+    else:
+        # directory is based on userid
+        directory = userid.rstrip('\n')
     # checking directory
     checkgroupname = directoryexist('dataset/'+date+'_'+groupname)
     checkdirectory = directoryexist('dataset/'+date+'_'+groupname+'/'+directory)
@@ -176,27 +186,37 @@ def lastCheckedNum(logfilename):
             start = 1
     return start
 
+
 if __name__ == '__main__':
+    urls = []
     reload(sys)
     sys.setdefaultencoding('utf-8')
-
-    # get userid from .csv file
-    urls = []
-    readfile = compareWithPreviousUser()
-    print urls
-    baseurl = 'www.facebook.com/'
-
-    if findIndex(stoppeduserid) :
-        startrow = findIndex(stoppeduserid)
+    print crawler_win_var()
+    if crawler_win_var()['info'] == 'additionaluser':
+        with open('dataset/271_user.json', 'r') as data_file:
+            xx = json.load(data_file)
+        startrow = 207
+        endrow = 208
+        # endrow = xx.__len__()
+        for url in range(startrow, endrow):
+            getuserurl = xx[url]
+            urls.append(getuserurl)
     else:
-        startrow = 0
-    endrow = readfile.__len__()
+        # get userid from .csv file
+        urls = []
+        readfile = compareWithPreviousUser()
+        print urls
+        baseurl = 'www.facebook.com/'
 
-    for idx in range(startrow, endrow):
-        getuserid = readfile[idx]
-        urls.append(getuserid)
+        if findIndex(stoppeduserid) :
+            startrow = findIndex(stoppeduserid)
+        else:
+            startrow = 0
+        endrow = readfile.__len__()
 
-    print "unique user : ", len(urls)
+        for idx in range(startrow, endrow):
+            getuserid = readfile[idx]
+            urls.append(getuserid)
 
     # driver init
     driver = webdriver.Firefox()
@@ -221,11 +241,18 @@ if __name__ == '__main__':
         driver.close()
 
     # visit the url based on urls
+    idx = 0
+    userid = 0
     for useridraw in urls:
         time.sleep(1)
 
-        userid = useridraw.rstrip('\n')
-        url = baseurl+userid
+        if crawler_win_var()['info'] == 'additionaluser':
+            url = useridraw
+            idx += 1
+            userid = useridraw.split('/')[3]
+        else:
+            userid = useridraw.rstrip('\n')
+            url = baseurl+userid
         print(url)
         # you should know how long you scroll in this timeline - for set the timeout
         # Print the start time.

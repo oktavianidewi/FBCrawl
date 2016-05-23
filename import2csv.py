@@ -89,5 +89,5 @@ def convertPostInfo(base):
     outfile.close()
 
 # convertPostInfo(groupname)
-print compareWithPreviousUser()
-print findIndex(stoppeduserid)
+# print compareWithPreviousUser()
+# print findIndex(stoppeduserid)

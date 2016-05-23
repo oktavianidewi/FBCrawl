@@ -70,9 +70,6 @@ def detectLanguageFromUserPosts(userID):
     return {"userid":userID,"status":status,"englishpost":numOfEnglishPost,"totalpost":numOfUserPost}
     # return status
 
-def checkValidUser():
-    pass
-
 def writeToFile(data):
     targetfile = tl_extractor_var()['targetfile']
     # harus ada pengecekan fileexist atau ga
@@ -89,22 +86,33 @@ def writeToFile(data):
     file.close()
     return True
 
+def countValid():
+    hitValid = 0
+    for userid in data:
+        if 'timeline' in data[userid]:
+            hitValid += 1
+    return hitValid
+
+def userEnglishPost():
+    resultToWrite = []
+    numOfEnglishPostUser = 0
+    # get all timeline data
+    for userid in data:
+        if userid != 'Store':
+            print userid
+            # english_non[userid] = detectLanguageFromUserPosts(userid)
+            result = detectLanguageFromUserPosts(userid)
+            if result['status'] == 'English':
+                numOfEnglishPostUser += 1
+        resultToWrite.append(result)
+    writeToFile(resultToWrite)
+    print 'jumlah english post user : ', numOfEnglishPostUser
+    return numOfEnglishPostUser
 
 # open file
 filename = tl_extractor_var()['sourcefile']
 with open(filename) as file:
     data = json.load(file)
 
-resultToWrite = []
-numOfEnglishPostUser = 0
-# get all timeline data
-for userid in data:
-    if userid != 'Store':
-        print userid
-        # english_non[userid] = detectLanguageFromUserPosts(userid)
-        result = detectLanguageFromUserPosts(userid)
-        if result['status'] == 'English':
-            numOfEnglishPostUser += 1
-    resultToWrite.append(result)
-writeToFile(resultToWrite)
-print 'jumlah english post user : ', numOfEnglishPostUser
+print countValid()
+print countUserdID()
