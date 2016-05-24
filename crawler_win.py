@@ -207,7 +207,7 @@ if __name__ == '__main__':
     elif crawler_win_var()['info'] == 'untrackeduser':
         with open('dataset/20160515_foodgroups_un.json', 'r') as data_file:
             xx = json.load(data_file)
-        startrow = 0
+        startrow = 90
         endrow = xx.__len__()
         for idx in range(startrow, endrow):
             getuserid = xx[idx]
