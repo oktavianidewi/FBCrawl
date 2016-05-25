@@ -156,10 +156,11 @@ def untracked():
     print len(selisih)
     return selisih
 
+userEnglishPost()
+"""
 writeToFile(untracked())
 print untracked()
 
-"""
 x = countValid()
 a = countExtracted()
 print sorted(x)
