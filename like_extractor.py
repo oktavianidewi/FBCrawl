@@ -70,28 +70,32 @@ def getUniqueLikeCategories():
             x += arrayLike
     return sorted(list(set(x)))
 
-likeperuser = {}
-matchvalue = []
-alluserlike = []
-column = getUniqueLikeCategories()
-print column
+def getUserLike():
+    likeperuser = {}
+    matchvalue = []
+    alluserlike = []
+    column = getUniqueLikeCategories()
+    # print column
 
-head = ['userid']
-for cat in column:
-    head.append(cat)
-likeperuser['headrow'] = head
+    head = ['userid']
+    for cat in column:
+        head.append(cat)
+    likeperuser['headrow'] = head
 
-userWithLike = {}
-for userid in data:
-    likevalue = data[userid]['like']
-    if likevalue:
-        matchvalue = []
-        for cat in column:
-            if cat in likevalue:
-                value = likevalue.count(cat)
-            else:
-                value = 0
-            matchvalue.append(value)
-        likeperuser[userid] = matchvalue
-# print likeperuser
-writeToFile(likeperuser)
+    userWithLike = {}
+    for userid in data:
+        likevalue = data[userid]['like']
+        if likevalue:
+            matchvalue = []
+            for cat in column:
+                if cat in likevalue:
+                    value = likevalue.count(cat)
+                else:
+                    value = 0
+                matchvalue.append(value)
+            likeperuser[userid] = matchvalue
+    # print likeperuser
+    # writeToFile(likeperuser)
+    return likeperuser
+
+print getUserLike()
