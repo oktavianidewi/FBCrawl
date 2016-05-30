@@ -62,7 +62,12 @@ def check_exists_by_xpath(xpath):
 
 def scrollLikePage(current_url, userid):
     # scroll until got 100 top-likes
-    likes_url = current_url+'/likes'
+    # https://www.facebook.com/profile.php?id=100008397645072&sk=likes
+    # https://www.facebook.com/rido.monthazeri/likes
+    if 'profile.php?id=' in current_url:
+        likes_url = current_url+'&sk=likes'
+    else:
+        likes_url = current_url+'/likes'
     driver.get(likes_url)
     time.sleep(1)
     current_url_after_redirect = driver.current_url
@@ -149,7 +154,11 @@ def scrollTimelinePage(current_url, userid):
 def scrollAboutPage(current_url, userid):
     # browse ABOUT page
     username = current_url.split('/')[3]
-    about_url = 'https://m.facebook.com/'+username+'/about'
+    if 'profile.php?id=' in current_url:
+        # https://m.facebook.com/profile.php?v=info&id=100008397645072
+        about_url = 'https://m.facebook.com/profile.php?v=info&id='+userid
+    else:
+        about_url = 'https://m.facebook.com/'+username+'/about'
     # open page based on url
     driver.get(about_url)
     # save webpage
@@ -284,12 +293,13 @@ if __name__ == '__main__':
         # tabs = ['timeline', 'likes', 'about']
         current_url = driver.current_url
 
+        """
         try:
             scrollTimelinePage(current_url, userid)
             rlog('timeline','success',idx, userid)
         except Exception, e:
             rlog('timeline','failed : %s' %(e),idx, userid)
-
+        """
         try:
             scrollLikePage(current_url, userid)
             rlog('like','success',idx, userid)
