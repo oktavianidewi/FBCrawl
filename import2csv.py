@@ -34,17 +34,20 @@ def compareWithPreviousUser():
         presentUser.pop(0)
     # print len(presentUser)
 
-    # print previousFile
-    with open(directory+'/'+previousFile) as data_file:
-        csv_data = csv.reader(data_file, delimiter=',')
-        for row in csv_data:
-            x = ', '.join(row)
-            previousUser.append(x)
-        previousUser.pop(0)
+    if previousFile != '':
+        # print previousFile
+        with open(directory+'/'+previousFile) as data_file:
+            csv_data = csv.reader(data_file, delimiter=',')
+            for row in csv_data:
+                x = ', '.join(row)
+                previousUser.append(x)
+            previousUser.pop(0)
 
-    # print len(previousUser)
+        # print len(previousUser)
 
-    usernew = list(set(presentUser) - set(previousUser))
+        usernew = list(set(presentUser) - set(previousUser))
+    else:
+        usernew = list(set(presentUser))
     # print len(usernew)
     return usernew
 

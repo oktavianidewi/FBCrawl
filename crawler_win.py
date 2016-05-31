@@ -156,6 +156,8 @@ def scrollAboutPage(current_url, userid):
     username = current_url.split('/')[3]
     if 'profile.php?id=' in current_url:
         # https://m.facebook.com/profile.php?v=info&id=100008397645072
+        # https://m.facebook.com/profile.php?id=100008397645072&sk=about
+        # https://m.facebook.com/profile.php?id=100001592978103&sk=about
         about_url = 'https://m.facebook.com/profile.php?v=info&id='+userid
     else:
         about_url = 'https://m.facebook.com/'+username+'/about'
@@ -255,9 +257,9 @@ if __name__ == '__main__':
     driver.get("https://www.facebook.com/login.php")
     # time.sleep(3)
     driver.find_element_by_id("email").clear()
-    driver.find_element_by_id("email").send_keys("dev.oktaviani.dewi@gmail.com")
+    driver.find_element_by_id("email").send_keys(crawler_win_var()['email'])
     driver.find_element_by_id("pass").clear()
-    driver.find_element_by_id("pass").send_keys("zGq-8ev-Z7e-vYh")
+    driver.find_element_by_id("pass").send_keys(crawler_win_var()['password'])
     driver.find_element_by_id("loginbutton").click()
     # Better wait for several seconds.
     # time.sleep(3)
