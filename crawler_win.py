@@ -153,15 +153,16 @@ def scrollTimelinePage(current_url, userid):
 
 def scrollAboutPage(current_url, userid):
     # browse ABOUT page
-    username = current_url.split('/')[3]
     if 'profile.php?id=' in current_url:
-        # https://m.facebook.com/profile.php?v=info&id=100008397645072
-        # https://m.facebook.com/profile.php?id=100008397645072&sk=about
-        # https://m.facebook.com/profile.php?id=100001592978103&sk=about
-        about_url = 'https://m.facebook.com/profile.php?v=info&id='+userid
+        # https://m.facebook.com/profile.php?id=114407042245292&sk=about
+        # kadang userid nya ketika di url berubah jadi id lain
+        username = current_url.split('=')[1].split('&')[0]
+        about_url = 'https://m.facebook.com/profile.php?id='+username+'&sk=about'
     else:
+        username = current_url.split('/')[3]
         about_url = 'https://m.facebook.com/'+username+'/about'
     # open page based on url
+    print about_url
     driver.get(about_url)
     # save webpage
     savepage("about", userid)
