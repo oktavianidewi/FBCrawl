@@ -1,5 +1,6 @@
 import json
 from dynamicVar import user_distribution_var
+from like_extractor import getUserLike
 
 # open file
 def open_multiple_english(filenamearr):
@@ -20,31 +21,65 @@ def open_multiple_all(filenamearr):
         data.update(dict)
     return data
 
+
 english_sourcefile = user_distribution_var()['english_sourcefile']
-all_sourcefile = user_distribution_var()['all_sourcefile']
+# all_sourcefile = user_distribution_var()['all_sourcefile']
 
-rows = open_multiple_english(english_sourcefile)
-# print len(open_multiple_english(english_sourcefile))
+rows = open_multiple_all(english_sourcefile)
+userlike = getUserLike()
+# print rows
+err = 0
+tlempty = 0
 
-all_rows = open_multiple_all(all_sourcefile)
-# print len(open_multiple_all(all_sourcefile))
+import csv
+userarr = []
+directory = 'extracted'
+csvfilename = '1.csv'
+outfile = file(directory+'/'+csvfilename, 'wb')
+writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
+# urutannya : userid, numposts, startdatepost, enddatepost, likerow
 
-# englishonly = []
-englishonly = {}
-for row in rows:
-    if row['englishpost'] > 20:
-        # englishonly.append(all_rows[row['userid']])
-        englishonly[row['userid']] = all_rows[row['userid']]
-    # row['userid']
+columnlike = userlike['headrow'][1:]
+head = ['userid', 'numposts', 'startdatepost', 'enddatepost']
+for x in columnlike:
+    head.append(x)
 
-print 'jumlah user english ', len(englishonly)
+writer.writerow(head)
 
-# untuk mengambil no of post
-for english_userid in englishonly:
-    englishrow = englishonly[english_userid]
-    timelines = englishrow['timeline']
-    # print min(timelines) print max(timelines)
-    print english_userid, 'no of post : ' , len(timelines)
-    print 'tanggal awal :', timelines[0][6]
-    print 'tanggal akhir :',timelines[len(timelines)-1][6]
+for i in rows:
+    userposts = rows[i]
+    numpost = len(userposts['timeline'])
+    # print i
+    # print numpost
+
+    try:
+        startdatepost = min(userposts['timeline'])[6]
+        enddatepost = max(userposts['timeline'])[6]
+    except Exception, e:
+        startdatepost = 'None'
+        enddatepost = 'None'
+        tlempty += 1
+
+    # print startdatepost
+    # print enddatepost
+
+    try:
+        userlikelist = userlike[i]
+    except Exception, e:
+        err += 1
+        userlikelist = 'None'
+
+    userarr.append([i, startdatepost, enddatepost, userlikelist])
+    for y in userlikelist:
+        userarr.append(y)
+
+    writer.writerow(userarr)
+outfile.close()
+
+print 'like kosong : ', err
+print 'tl kosong : ', tlempty
+print userarr
+
+# proses writing data
+
 

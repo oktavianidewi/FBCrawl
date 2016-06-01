@@ -98,4 +98,4 @@ def getUserLike():
     # writeToFile(likeperuser)
     return likeperuser
 
-print getUserLike()
+# print getUserLike()
