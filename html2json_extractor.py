@@ -469,7 +469,7 @@ if __name__ == '__main__':
                 user_lines = user_file.read()
 
                 soup = BeautifulSoup(user_lines, "html.parser")
-
+                file['group'] = html2json_extractor_var()['groupNameRow']
                 # extract likes
                 if 'like' in file_path:
                     likeres = xtract_like()

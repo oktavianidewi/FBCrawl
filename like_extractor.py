@@ -10,10 +10,8 @@ from collections import Counter
 filenamearr = like_extractor_var()['sourcefile']
 data = {}
 for filename in filenamearr:
-
     with open(filename) as file:
         dict = json.load(file)
-
     data.update(dict)
 # print 'alldict', data
 # print like_extractor_var()['targetfile']
@@ -75,7 +73,6 @@ def getUserLike():
     matchvalue = []
     alluserlike = []
     column = getUniqueLikeCategories()
-    # print column
 
     head = ['userid']
     for cat in column:
