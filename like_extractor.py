@@ -81,7 +81,10 @@ def getUserLike():
 
     userWithLike = {}
     for userid in data:
-        likevalue = data[userid]['like']
+        try:
+            likevalue = data[userid]['like']
+        except Exception, e:
+            continue
         if likevalue:
             matchvalue = []
             for cat in column:
