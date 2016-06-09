@@ -15,24 +15,38 @@ def open_multiple_english(filenamearr):
     return data
 
 def open_multiple_all(filenamearr):
-    data = {}
-    for filename in filenamearr:
-        with open(filename) as file:
-            dict = json.load(file)
-        data.update(dict)
+    if type(filenamearr) is list:
+        # print 'list'
+        data = {}
+        for filename in filenamearr:
+            with open(filename) as file:
+                dict = json.load(file)
+            data.update(dict)
+    else:
+        # print 'bukan list'
+        with open(filenamearr) as file:
+            data = json.load(file)
     return data
 
 from operator import itemgetter
 
-def getTopLimit():
-    # english_sourcefile = user_distribution_var()['english_sourcefile']
+def getTopLimit(maxlimit, english_sourcefile):
+    # masing2 file
+    # , 'extracted/english_traveladdiction.json', 'extracted/english_constitutionalpatriot.json','extracted/english_Hiking With Dogs.json', 'extracted/english_Like For Like Promote Your Business.json', 'extracted/english_Jazzmasters&Jaguars.json'
+    '''
+    english_sourcefile = [
+        'extracted/english_TEDtranslate.json'
+    ]
 
+    # semua file
     english_sourcefile = [
         'extracted/english_TEDtranslate.json', 'extracted/english_traveladdiction.json', 'extracted/english_constitutionalpatriot.json',
         'extracted/english_Hiking With Dogs.json', 'extracted/english_Like For Like Promote Your Business.json', 'extracted/english_Jazzmasters&Jaguars.json'
     ]
+    '''
     rows = open_multiple_all(english_sourcefile)
-    userlike = getUserLike()
+    userlike = getUserLike(english_sourcefile)
+    # print userlike
 
     jumlaharr= []
     columnlike = userlike['headrow'][1:]
@@ -50,18 +64,48 @@ def getTopLimit():
                 k = 0
             jumlah = jumlah + k
         jumlaharr.append([v, jumlah])
-    print 'Top-30 most liked subcategories from : ', english_sourcefile
+    # print 'Top-30 most liked subcategories from : ', english_sourcefile
     sortedlist = sorted(jumlaharr, key=itemgetter(1), reverse=True)
     # print sortedlist
-    top30 = []
-    for index in range(0, 50):
-        print sortedlist[index]
-        # top30.append(sortedlist[index])
-    # return sortedlist
-    return top30
+    if maxlimit > 0:
+        return sortedlist[:maxlimit]
+    else:
+        return sortedlist
 
-getTopLimit()
+english_sourcefile = user_distribution_var()['english_sourcefile']
+# print english_sourcefile
+for x in english_sourcefile:
+    print x
+    print getTopLimit(10, x)
 quit()
+"""
+print len(getTopLimit(0))
+for x in getTopLimit(0):
+    print x
+quit()
+"""
+
+def csvCategoryNLikes():
+    directory = 'extracted'
+    csvfilename = user_distribution_var()['targetfilecategoryonly']
+    outfile = file(directory+'/'+csvfilename, 'wb')
+    writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
+    data = getTopLimit(0)
+    head = ['category', 'likecount']
+    writer.writerow(head)
+    # for x in columnlike:
+    for x in data:
+        # print x[0].replace(',', '-')
+        x[0] = x[0].replace(',', '-')
+        print x
+        # untuk mengubah ',' pada kolom dengan '-'
+        # head.append(x.replace(',','-').encode('ascii', 'ignore').decode('ascii'))
+        writer.writerow(x)
+    outfile.close()
+# print getTopLimit(0)
+
+# csvCategoryNLikes()
+
 
 def userdist_all(topLimit, *args):
     english_sourcefile = user_distribution_var()['english_sourcefile']
@@ -76,8 +120,8 @@ def userdist_all(topLimit, *args):
 
     userarr = []
     directory = 'extracted'
-    # csvfilename = user_distribution_var()['targetfile']
-    csvfilename = 'english_all_110.csv'
+    csvfilename = user_distribution_var()['targetfile']
+    # csvfilename = 'english_all_110.csv'
     outfile = file(directory+'/'+csvfilename, 'wb')
     writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
     # urutannya : userid, group, numposts, recentdatepost, olddatepost, likerow
@@ -88,10 +132,11 @@ def userdist_all(topLimit, *args):
     columnlikelimit = []
     columnlikeindex = []
     if topLimit == 'betul':
-        topLimitArr = getTopLimit()
+        topLimitArr = getTopLimit(0)
         for sub in topLimitArr:
             # print sub[0]
             # print columnlike.index(sub[0])
+            # .replace(',','-')
             columnlikeindex.append(columnlike.index(sub[0]))
             columnlikelimit.append(sub[0])
 
@@ -100,7 +145,8 @@ def userdist_all(topLimit, *args):
     head = ['userid', 'group', 'numposts', 'olddatepost', 'recentdatepost']
     # for x in columnlike:
     for x in columnlikelimit:
-        head.append(x.encode('ascii', 'ignore').decode('ascii'))
+        # untuk mengubah ',' pada kolom dengan '-'
+        head.append(x.replace(',','-').encode('ascii', 'ignore').decode('ascii'))
     writer.writerow(head)
     for userid in rows:
         userposts = rows[userid]

@@ -7,14 +7,20 @@ from dynamicVar import like_extractor_var
 from collections import Counter
 
 # open file
-filenamearr = like_extractor_var()['sourcefile']
-data = {}
-for filename in filenamearr:
-    with open(filename) as file:
-        dict = json.load(file)
-    data.update(dict)
-# print 'alldict', data
-# print like_extractor_var()['targetfile']
+# filenamearr = like_extractor_var()['sourcefile']
+def openfile(filenamearrs):
+    if type(filenamearrs) is list:
+        # print 'list'
+        data = {}
+        for filename in filenamearrs:
+            with open(filename) as file:
+                dict = json.load(file)
+            data.update(dict)
+    else:
+        # print 'bukan list'
+        with open(filenamearrs) as file:
+            data = json.load(file)
+    return data
 
 def writeToFile(result):
     filename = like_extractor_var()['targetfile']
@@ -35,6 +41,7 @@ def writeToFile(result):
 
 def getLikeCategorySummary():
     x = []
+    data = openfile(filenamearr)
     for userid in data:
         if 'like' in data[userid]:
             # if len(data[userid]['like']) > 0:
@@ -59,7 +66,8 @@ def getLikeCategorySummary():
     print resultToWrite
     writeToFile(resultToWrite)
 
-def getUniqueLikeCategories():
+def getUniqueLikeCategories(filenamearr):
+    data = openfile(filenamearr)
     x = []
     for userid in data:
         if 'like' in data[userid]:
@@ -68,17 +76,17 @@ def getUniqueLikeCategories():
             x += arrayLike
     return sorted(list(set(x)))
 
-def getUserLike():
+def getUserLike(filenamearr):
     likeperuser = {}
     matchvalue = []
     alluserlike = []
-    column = getUniqueLikeCategories()
+    data = openfile(filenamearr)
+    column = getUniqueLikeCategories(filenamearr)
 
     head = ['userid']
     for cat in column:
         head.append(cat)
     likeperuser['headrow'] = head
-
     userWithLike = {}
     for userid in data:
         try:
@@ -98,4 +106,4 @@ def getUserLike():
     # writeToFile(likeperuser)
     return likeperuser
 
-# print getUserLike()
+    # print getUserLike()
