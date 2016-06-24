@@ -39,7 +39,7 @@ def writeToFile(result):
     file.close()
     return True
 
-def getLikeCategorySummary():
+def getLikeCategorySummary(filenamearr):
     x = []
     data = openfile(filenamearr)
     for userid in data:
@@ -102,8 +102,13 @@ def getUserLike(filenamearr):
                     value = 0
                 matchvalue.append(value)
             likeperuser[userid] = matchvalue
-    # print likeperuser
+    """
+    for cc in likeperuser:
+        print cc, likeperuser[cc]
+    print head
+    quit()
+    """
     # writeToFile(likeperuser)
+    # print 'head : ', head
     return likeperuser
-
     # print getUserLike()
