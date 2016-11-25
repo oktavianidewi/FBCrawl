@@ -29,6 +29,7 @@ def open_multiple_all(filenamearr):
     return data
 
 from operator import itemgetter
+english_sourcefile = user_distribution_var()['english_sourcefile']
 
 def getTopLimit(maxlimit, english_sourcefile):
     # masing2 file
@@ -46,6 +47,7 @@ def getTopLimit(maxlimit, english_sourcefile):
     '''
     rows = open_multiple_all(english_sourcefile)
     userlike = getUserLike(english_sourcefile)
+    print 'english : ', english_sourcefile
     # print userlike
 
     jumlaharr= []
@@ -66,18 +68,27 @@ def getTopLimit(maxlimit, english_sourcefile):
         jumlaharr.append([v, jumlah])
     # print 'Top-30 most liked subcategories from : ', english_sourcefile
     sortedlist = sorted(jumlaharr, key=itemgetter(1), reverse=True)
-    # print sortedlist
     if maxlimit > 0:
         return sortedlist[:maxlimit]
     else:
         return sortedlist
 
-english_sourcefile = user_distribution_var()['english_sourcefile']
-# print english_sourcefile
-for x in english_sourcefile:
-    print x
-    print getTopLimit(10, x)
-quit()
+def irisanLikedGroup(english):
+    # print english_sourcefile
+    topLimitArrAll = []
+    for x in english:
+        print x
+        # topLimitArr = getTopLimit(10, x)
+        topLimitArrAll.append([ z[0] for z in getTopLimit(10, x) ])
+    irisan = []
+    for topLimitArr in topLimitArrAll:
+        for single in topLimitArr :
+            if single not in irisan:
+                irisan.append(single)
+    # print len(irisan)
+    return irisan
+
+# print irisanLikedGroup(english_sourcefile)
 """
 print len(getTopLimit(0))
 for x in getTopLimit(0):
@@ -90,7 +101,7 @@ def csvCategoryNLikes():
     csvfilename = user_distribution_var()['targetfilecategoryonly']
     outfile = file(directory+'/'+csvfilename, 'wb')
     writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
-    data = getTopLimit(0)
+    data = getTopLimit(0, english_sourcefile)
     head = ['category', 'likecount']
     writer.writerow(head)
     # for x in columnlike:
@@ -108,11 +119,11 @@ def csvCategoryNLikes():
 
 
 def userdist_all(topLimit, *args):
-    english_sourcefile = user_distribution_var()['english_sourcefile']
     # all_sourcefile = user_distribution_var()['all_sourcefile']
-
     rows = open_multiple_all(english_sourcefile)
-    userlike = getUserLike()
+
+    # merge dari semua file
+    userlike = getUserLike(english_sourcefile)
 
     # print rows
     err = 0
@@ -126,19 +137,38 @@ def userdist_all(topLimit, *args):
     writer = csv.writer(outfile,delimiter=',',quoting=csv.QUOTE_MINIMAL)
     # urutannya : userid, group, numposts, recentdatepost, olddatepost, likerow
 
-    columnlike = userlike['headrow'][1:]
+    #
+    # columnlike = userlike['headrow'][1:]
+    columnlike = irisanLikedGroup(english_sourcefile)
     # print len(columnlike)
     # print columnlike
     columnlikelimit = []
     columnlikeindex = []
     if topLimit == 'betul':
-        topLimitArr = getTopLimit(0)
-        for sub in topLimitArr:
-            # print sub[0]
-            # print columnlike.index(sub[0])
-            # .replace(',','-')
-            columnlikeindex.append(columnlike.index(sub[0]))
+        topLimitArr = getTopLimit(0, english_sourcefile)
+        topLimitArrNoValue = sorted([ sub[0] for sub in topLimitArr ])
+
+        for sub in columnlike:
+            columnlikeindex.append(topLimitArrNoValue.index(sub))
+            columnlikelimit.append(sub)
+            # jumlahnya salah
+        """
+        # untuk yang semua data
+        for sub in topLimitArrNoValue:
+            columnlikeindex.append(columnlike.index(sub))
             columnlikelimit.append(sub[0])
+        """
+
+    # untuk testing
+    print columnlikeindex
+    print columnlikelimit
+    """
+    print 'limit arr' , sorted(topLimitArrNoValue)
+    for x in userlike:
+        print x
+    quit()
+    """
+
 
     # print columnlikelimit
 
@@ -186,7 +216,7 @@ def userdist_all(topLimit, *args):
         # print userlikelist
 
         for ilimit in columnlikeindex:
-            # print ilimit
+            print ilimit
             try:
                 y = userlikelist[ilimit]
             except Exception, e:
@@ -205,8 +235,8 @@ def userdist_all(topLimit, *args):
         writer.writerow(userarr)
     outfile.close()
 
-    print 'like kosong : ', err
-    print 'tl kosong : ', tlempty
+    # print 'like kosong : ', err
+    # print 'tl kosong : ', tlempty
     # print userarr
 
 

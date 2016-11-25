@@ -10,6 +10,35 @@ from urllib import urlopen
 from dynamicVar import html2json_extractor_var
 # directoryGroup, savedInfoFile
 
+
+def xtract_friendnum():
+    # dari timeline, extract class _39g5
+    res = {}
+    post_num = 0
+
+    # Get the user url.
+    try:
+        url = soup.find(id = 'fb-timeline-cover-name').find_parent("a")["href"]
+    except Exception, e:
+        url = str(e).replace("'", "")
+
+    # First we get the full name of the target.
+    # Some posts in the timeline are not posted by the target user some we should get the name of the target to distinguish the posts.
+    if soup.find(id = 'fb-timeline-cover-name'):
+        user_name = soup.find(id = 'fb-timeline-cover-name').text
+    else:
+        # cannot find the target means this page is not available.
+        print "Sorry, this page isn't available.\n"
+        # continue
+        pass
+
+    # We get all the posts.
+    try:
+        numOfFriend = soup.find('a', attrs={'class':'_39g5'}).text.replace(",", "")
+    except Exception, e:
+        numOfFriend = 0
+    return numOfFriend
+
 def xtract_timeline():
     res = {}
     post_num = 0
@@ -250,13 +279,23 @@ def xtract_timeline():
         # if comment part not exists, add nothing about the comment to the post information. stop adding.
         if the_post_comment != '':
             # likes count
-            the_post_comment_likes = the_post_comment.find('div', attrs={'class': 'UFILikeSentenceText'})
+            # the_post_comment_likes = the_post_comment.find('div', attrs={'class': 'UFILikeSentenceText'})
+            the_post_comment_likes = the_post_comment.find('div', attrs={'class': 'UFILikeSentence'})
             the_post_comment_likes_count = 0
             if the_post_comment_likes:
-                if 'likes' in the_post_comment_likes.text:
+                # love, like, wow, haha
+                if 'like' in the_post_comment_likes.text:
                     the_post_comment_likes_count = 1
                 else:
-                    the_post_comment_likes_count = the_post_comment_likes.text[: the_post_comment_likes.text.find("people")-1]
+                    # the_post_comment_likes_count = the_post_comment_likes.text[: the_post_comment_likes.text.find("haha")-1] #people
+                    try:
+                        the_post_comment_likes_count = the_post_comment_likes.find('span', attrs={'class': '_4arz'}).text
+                        # print the_post_comment_likes_count
+                        if the_post_comment_likes_count.isdigit() == False:
+                            the_post_comment_likes_count = the_post_comment_likes.text[: the_post_comment_likes.text.find("people")-1]
+                            the_post_comment_likes_count = ''.join(x for x in the_post_comment_likes_count if x.isdigit())
+                    except Exception, e:
+                        the_post_comment_likes_count = 0
             the_post_list.append(the_post_comment_likes_count)
             # share count
             the_post_comment_shares = the_post_comment.find('div', attrs={'class': 'UFIRow UFIShareRow'})
@@ -369,6 +408,32 @@ def xtract_like():
         subcategoryitemsarr.append(str(e).replace("'", ""))
     return subcategoryitemsarr
 
+def xtract_photo():
+    # extract photo
+    allphotos = {}
+    photo = {}
+    try:
+        allphotos = soup.find_all(attrs={'class':'photoText'})
+        for x in allphotos:
+            albumNames = x.find('a').strong.contents[0]
+            try:
+                # print len(x.find('div', attrs={'class':'fbPhotoAlbumActionList'}).contents)
+
+                if len(x.find('div', attrs={'class':'fbPhotoAlbumActionList'}).contents) != 0:
+                    numOfPhotos = x.find('div', attrs={'class':'fbPhotoAlbumActionList'}).contents[0]
+                else:
+                    # -1 means the number of photo is not written
+                    numOfPhotos = -1
+            except AttributeError:
+                numOfPhotos = -1
+            # extract lagi text title nya
+            photo[albumNames] = numOfPhotos
+    except Exception, e:
+        # about['error'] = e
+        photo['error'] = str(e).replace("'", "")
+    return photo
+
+
 def xtract_about():
     # extract username
     identity = {}
@@ -457,7 +522,7 @@ if __name__ == '__main__':
 
         for name in files:
             if name != '.DS_Store':
-                print 'name : ', name
+                # print 'name : ', name
 
                 # post number for every user
                 post_num = 0
@@ -470,6 +535,14 @@ if __name__ == '__main__':
 
                 soup = BeautifulSoup(user_lines, "html.parser")
                 file['group'] = html2json_extractor_var()['groupNameRow']
+
+                # to extract number of friends
+                if 'timeline' in file_path:
+                    print 'name : ', name
+                    friendres = xtract_friendnum()
+                    file['friendnum'] = friendres
+
+                """
                 # extract likes
                 if 'like' in file_path:
                     likeres = xtract_like()
@@ -485,9 +558,16 @@ if __name__ == '__main__':
                     timelineres = xtract_timeline()
                     print timelineres
                     file['timeline'] = timelineres
+                elif 'photos' in file_path:
+                    # extract timeline
+                    photores = xtract_photo()
+                    # print photores
+                    file['photos'] = photores
+                """
             # userid1 = str(name.split('_')[1].split('.')[0])
-            userid = str(name).rstrip('.html').lstrip('likes_, about_, timeline_')
+            userid = str(str(name).rstrip('.html').lstrip('likes_, about_, timeline_, photos_'))
             # print userid
             infoperuser[userid] = file
-    print infoperuser
+
+    # print infoperuser
     writeToJsonFile(infoperuser, html2json_extractor_var()['savedInfoFile'])
